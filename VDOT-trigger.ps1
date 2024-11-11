@@ -33,4 +33,4 @@ $extractPath = "c:\VDOT\"
     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
   
 # Kör skript
-    powershell  ""$extractPath\Virtual-Desktop-Optimization-Tool-main\Windows_VDOT.ps1 -Optimizations All -AdvancedOptimizations All -AcceptEULA -Verbose""
+    powershell  ""$extractPath\Virtual-Desktop-Optimization-Tool-main\Windows_VDOT.ps1 -Optimizations All -AdvancedOptimizations All -AcceptEULA -Verbose""cd 
