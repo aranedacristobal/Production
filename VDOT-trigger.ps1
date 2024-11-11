@@ -34,3 +34,5 @@ $extractPath = "c:\VDOT\"
   
 # Kör skript
     powershell  ""$extractPath\Virtual-Desktop-Optimization-Tool-main\Windows_VDOT.ps1 -Optimizations All -AdvancedOptimizations All -AcceptEULA -Verbose""
+
+    #test
