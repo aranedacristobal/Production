@@ -17,3 +17,4 @@ $destinationPath = "C:\temp\NinjaASR.ps1"
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 
     Register-ScheduledTask -Action $action -Principal $principal -Trigger $trigger -Settings $settings -TaskName "Add NinjaOne ASR Exclusion" -Description "Runs a PowerShell script to add NinjaOne ASR exclusion"
+    #Test
