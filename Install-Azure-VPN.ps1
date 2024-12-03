@@ -1,3 +1,5 @@
+Start-Transcript (Join-Path $env:TEMP 'Install-Azure-VPN.log')
+
 # Funktion för att kolla om Winget är installerad
 function Check-Winget {
     try {
@@ -39,5 +41,20 @@ if (-not (Check-Winget)) {
 }
 
 # Installera Az-VPN
-
 winget install "azure vpn" --accept-package-agreements --accept-source-agreements
+
+# Chilla
+Start-Sleep -Seconds 30
+
+# Hämta konfigfil från netlogon o dumpa i användarens local
+$username = $env:USERNAME
+
+# Variabler
+$fullPath = "C:\Users\$username\AppData\Local\Packages\Microsoft.AzureVpn_8wekyb3d8bbwe\LocalState"
+$sourceFile = "\\YOURDOMAIN.LOCAL\NETLOGON\Azure-vpn\rasphone.pbk" 
+
+# Exekvera
+    Copy-Item -Path $sourceFile -Destination $fullPath -Force
+    Write-Output "Fil kopierad to $fullPath"
+
+Stop-Transcript
