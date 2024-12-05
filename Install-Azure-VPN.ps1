@@ -1,7 +1,7 @@
 Start-Transcript (Join-Path $env:TEMP 'Install-Azure-VPN.log')
 
 # Funktion för att kolla om Winget är installerad
-function Check-Winget {
+function Test-WingetInstalled {
     try {
         # Kolla 
         $winget = Get-Command winget -ErrorAction Stop
@@ -15,26 +15,14 @@ function Check-Winget {
 
 # Funktion för att installera Winget
 function Install-Winget {
-    Write-Host "Installerar winget..."
-    
-    # Skapa variabler för o dumpa i temp
-    $installerUrl = "https://aka.ms/getwinget"
-    $installerPath = "$env:TEMP\AppInstaller.msixbundle"
-
-    # Ladda ner winget
-    Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
-
-    # Installera 
-    Add-AppxPackage -Path $installerPath
-
-    # Steka
-    Remove-Item -Path $installerPath -Force
-
-    Write-Host "winget installation klar."
+        Install-PackageProvider -Name NuGet -Force | Out-Null
+        Install-Module -Name Microsoft.WinGet.Client -Force -Repository PSGallery | Out-Null
+        Repair-WinGetPackageManager -IncludePrerelease
+    }
 }
 
 # Exekvera
-if (-not (Check-Winget)) {
+if (-not (Test-WingetInstalled)) {
     Install-Winget
 } else {
     Write-Host "Inget behövs. winget är redan installerad."
