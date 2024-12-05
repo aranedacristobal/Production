@@ -14,22 +14,10 @@ function Test-WingetInstalled {
 
 # Funktion för att installera Winget
 function Install-Winget {
-    Write-Host "Installerar winget..."
-    
-    # Skapa variabler för o dumpa i temp
-    $installerUrl = "https://aka.ms/getwinget"
-    $installerPath = "$env:TEMP\AppInstaller.msixbundle"
-
-    # Ladda ner winget
-    Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
-
-    # Installera 
-    Add-AppxPackage -Path $installerPath
-
-    # Steka
-    Remove-Item -Path $installerPath -Force
-
-    Write-Host "winget installation klar."
+        #$progressPreference = 'silentlyContinue'
+        Install-PackageProvider -Name NuGet -Force | Out-Null
+        Install-Module -Name Microsoft.WinGet.Client -Force -Repository PSGallery | Out-Null
+        Repair-WinGetPackageManager -IncludePrerelease
 }
 
 # Exekvera
