@@ -1,47 +1,37 @@
 Start-Transcript (Join-Path $env:TEMP 'Install-Azure-VPN.log')
 
-# Funktion för att kolla om Winget är installerad
-function Test-WingetInstalled {
-    try {
-        $winget = Get-Command winget -ErrorAction Stop
-        Write-Host "winget är installerad. Version: $($winget.FileVersionInfo.FileVersion)"
-        return $true
-    } catch {
-        Write-Host "winget är inte installerad."
-        return $false
-    }
+# Define a marker file path
+$markerFilePath = Join-Path $env:TEMP 'AzureVPN_Install_Marker.txt'
+
+#Check if the script has already been run
+if (Test-Path $markerFilePath) {
+    Write-Host "Script has already been run. Exiting."
+    exit
 }
 
-# Funktion för att installera Winget
-function Install-Winget {
-        #$progressPreference = 'silentlyContinue'
-        Install-PackageProvider -Name NuGet -Force | Out-Null
-        Install-Module -Name Microsoft.WinGet.Client -Force -Repository PSGallery | Out-Null
-        Repair-WinGetPackageManager -IncludePrerelease
-}
+# Install winget
+Install-PackageProvider -Name NuGet -Force | Out-Null
+Install-Module -Name Microsoft.WinGet.Client -Force -Repository PSGallery | Out-Null
+Repair-WinGetPackageManager -IncludePrerelease
 
-# Exekvera
-if (-not (Test-WingetInstalled)) {
-    Install-Winget
-} else {
-    Write-Host "Inget behövs. winget är redan installerad."
-}
-
-# Installera Az-VPN
+# Install Azure VPN
 winget install "azure vpn" --accept-package-agreements --accept-source-agreements
 
-# Chilla
+# Chill
 Start-Sleep -Seconds 30
 
-# Hämta konfigfil från netlogon o dumpa i användarens local
+# Get config file from netlogon and dump it in the user's local
 $username = $env:USERNAME
 
-# Variabler
+# Variables
 $fullPath = "C:\Users\$username\AppData\Local\Packages\Microsoft.AzureVpn_8wekyb3d8bbwe\LocalState"
-$sourceFile = "\\YOURDOMAIN.LOCAL\NETLOGON\Azure-vpn\rasphone.pbk" 
+$sourceFile = "\\labb.cloud\NETLOGON\Azure-vpn\rasphone.pbk" 
 
-# Exekvera
+# Execute
 Copy-Item -Path $sourceFile -Destination $fullPath -Force
-Write-Output "Fil kopierad to $fullPath"
+Write-Output "File copied to $fullPath"
+
+# Create the marker file to indicate the script has run
+New-Item -Path $markerFilePath -ItemType File -Force | Out-Null
 
 Stop-Transcript

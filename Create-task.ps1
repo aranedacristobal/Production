@@ -1,3 +1,4 @@
+# Du måste köra eleverad
 # Kolla om temp finns
 if (!(Test-Path -Path "C:\temp")) {
     New-Item -ItemType Directory -Path "C:\temp"
@@ -17,4 +18,3 @@ $destinationPath = "C:\temp\NinjaASR.ps1"
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 
     Register-ScheduledTask -Action $action -Principal $principal -Trigger $trigger -Settings $settings -TaskName "Add NinjaOne ASR Exclusion" -Description "Runs a PowerShell script to add NinjaOne ASR exclusion"
-    #Test
