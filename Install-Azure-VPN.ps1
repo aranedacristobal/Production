@@ -25,7 +25,7 @@ $username = $env:USERNAME
 
 # Variables
 $fullPath = "C:\Users\$username\AppData\Local\Packages\Microsoft.AzureVpn_8wekyb3d8bbwe\LocalState"
-$sourceFile = "\\labb.cloud\NETLOGON\Azure-vpn\rasphone.pbk" 
+$sourceFile = "\\DOMAIN.LOCAL\NETLOGON\Azure-vpn\rasphone.pbk" 
 
 # Execute
 Copy-Item -Path $sourceFile -Destination $fullPath -Force
