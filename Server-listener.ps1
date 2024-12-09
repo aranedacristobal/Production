@@ -1,3 +1,4 @@
+#Ändra porten du vill testa på din hoj
 $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Any, 65432)
 $listener.Start()
 Write-Host "Server started..."
