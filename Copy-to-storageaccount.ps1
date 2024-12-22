@@ -45,7 +45,7 @@ $azcopyPath = Get-ChildItem -Path "C:\temp\azcopy" -Recurse -Filter "azcopy.exe"
 [System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$azcopyPath", [System.EnvironmentVariableTarget]::Machine)
 
 #Prompta för källa
-$sourceUrl = Read-Host -Prompt "Enter the Source URL"
+$sourceUrl = Read-Host -Prompt "Enter the Source Path"
 
 #Prompta för destination
 $destinationPath = Read-Host -Prompt "Enter the Destination Path"
