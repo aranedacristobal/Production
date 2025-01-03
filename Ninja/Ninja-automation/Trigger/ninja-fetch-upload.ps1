@@ -3,7 +3,7 @@ Start-Transcript -Path "$env:TEMP\ninja-fetch-upload.log"
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 
-# Anslut med managerad identitet, denna behövs sättas upp och ge behörigheter innan
+# Connect with a managed identity to access your keyvault, you could have the token bearer you API Secret in clear text but I rather not
 Connect-AzAccount -Identity
 
 # Variabler
@@ -13,10 +13,10 @@ $secrets = @{
     secretPw           = "YOUR-SECRET" 
 }
 
-# Hashtabell
+# Build hashtable
 $retrievedSecrets = @{}
 
-# Hämta hemligheterna i en for-loop av ngn anledning går det inte med powershell (gick med az cli)
+# Get secrets
 foreach ($key in $secrets.Keys) {
     try {
         $secret = az keyvault secret show --vault-name $keyVaultName --name $secrets[$key] | ConvertFrom-Json
@@ -37,10 +37,10 @@ foreach ($key in $secrets.Keys) {
 
 & 'Ninja-automation/List/Ninja-build-csv.ps1'
 
-# Sökväg 
+# Path 
 $csvPath = "Ninja\Ninja-automation\List\output2.csv"  
 
-# Läs in CSV
+# Read CSV
 $data = Import-Csv -Path $csvPath -Delimiter ','  
 
 $urlToken = "YOUR URL TOKEN"
@@ -52,32 +52,32 @@ $bodyToken = @{
 }
 
 
-# Bygg en HTTP-begäran för att hämta access token
+# Build your request based
 $responseToken = Invoke-RestMethod -Uri $urlToken -Method Post -ContentType "application/x-www-form-urlencoded" -Body $bodyToken
 $accessToken = $responseToken.access_token 
 
-# Bygg array
+# Build array
 $downloadUrls = @()
 
-# Loopa
+# Loop
 foreach ($record in $data) {
     $organizationId = $record.organizationid
     $locationId = $record.locationid
 
-    # Logga
+    # Log
     Write-Host "Processing record for Organization ID: $organizationId, Location ID: $locationId"
 
-    # Variabel
+    # Variables
     $url = "YOUR URL FOR FETCHING INSTALLERS"
 
-    # Definiera huvudet
+    # Define head
     $headers = @{
         "Accept"        = "application/json"
         "Authorization" = "Bearer $accessToken"
         "Content-Type"  = "application/json"
     }
 
-    # Definiera kroppen
+    # Define body
     $body = @{
         organizationId = $organizationId
         locationId     = $locationId
@@ -87,19 +87,19 @@ foreach ($record in $data) {
         }
     } | ConvertTo-Json
 
-    # Bygg en HTTP-begäran 
+    # Build a request 
     try {
         $response = Invoke-RestMethod -Uri $url -Method Post -Headers $headers -Body $body
 
-        # Kontrollera
+        # Control
         if ($response -and $response.url) {
-            # Bygg ett URL för nedladdning
+            # Build an URL
             $ninjaInstaller = $response.url 
 
-            # Logga
+            # Log
             Write-Host "Installer generated successfully. Download URL: $ninjaInstaller"
 
-            # Lagra
+            # Store
             $downloadUrls += $ninjaInstaller
         } else {
             Write-Host "No URL returned for Organization ID: $organizationId. Response: $response"
@@ -109,42 +109,42 @@ foreach ($record in $data) {
     }
 }
 
-# Dumpa i filen
+# Dump
 $downloadUrls | Out-File -FilePath "Ninja\Ninja-installers\downloadUrls.txt"  
 
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 
-# Variabler
+# Variables
 $urlsFilePath = "Ninja\Ninja-installers\downloadUrls.txt"  
 $downloadPath = "Ninja\Ninja-installers"  
 
-# Läs
+# Read
 $downloadUrls = Get-Content -Path $urlsFilePath
 
-# Skapa klienten
+# Create
 $webClient = New-Object System.Net.WebClient
 
-# Hasha
+# Hash
 $processedUrls = @{}
 
-# Loopa
+# Loop
 foreach ($url in $downloadUrls) {
     if ($processedUrls.ContainsKey($url)) {
         Write-Host "Duplicate URL found: $url. Stopping the script."
-        break  # Bryt om det är samma sen tidigare
+        break  # Break if they are the same
     }
 
-    # Markera det som hanterat
+    # Mark as handled
     $processedUrls[$url] = $true
 
-    # Extrahera
+    # Extract
     $fileName = [System.IO.Path]::GetFileName($url)  
 
-    # Slå ihop
+    # Merge
     $fullPath = Join-Path -Path $downloadPath -ChildPath $fileName
 
-    # Ladda ner
+    # Download
     try {
         $webClient.DownloadFile($url, $fullPath)
         Write-Host "Downloaded: $fullPath"
@@ -153,13 +153,13 @@ foreach ($url in $downloadUrls) {
     }
 }
 
-# Dumpa klienten
+# Dump
 $webClient.Dispose()
 
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 
-# Variabler
+# Variables
 $keyVaultName               = "YOUR KEYVAULT NAME"  
 $Secrets = @{
             secretappidpw   = "YOUR APPLICATION PASSWORD"  
@@ -167,19 +167,20 @@ $Secrets = @{
             secrettenantid  = "YOUR TENANT ID"
 }
 
-# Tabell för att lagra hemligheterna
+# Array
 $retrievedSecrets = @{}
 
-# Hämta hemligheterna
+# Get secrets
 try {
     foreach ($key in $Secrets.Keys) {
         $secret = az keyvault secret show --vault-name $keyVaultName --name $Secrets[$key] | ConvertFrom-Json
         
-        # Säkerställ att du har fått data
+        
+        # Confirm data
         if ($null -eq $secret) {
             Write-Host "Secret '$key' not found."
         } else {
-            # Lagra datat
+            # Store data
             $retrievedSecrets[$key] = $secret.value
         }
     }
@@ -187,21 +188,21 @@ try {
     Write-Host "Error retrieving secret: $_"
 }
 
-# Variablerna med sina hemligheter
+# Variables
 $tenantId            = $retrievedSecrets['secrettenantid']  
 $appId               = $retrievedSecrets['secretappid']         
 $password            = $retrievedSecrets['secretappidpw']    
 
-# Variabler (dessa är till lagringskontot)
+# Variables
 $resourceGroupName   = "YOUR RESOURCE GROUP NAME"
 $storageAccountName  = "STORAGE ACCOUNT NAME"
 $containerName       = "CONTAINER NAME"  
 $expiryTime          = (Get-Date).AddMinutes(10)
 
-# Kontext
+# Context
 $context = New-AzStorageContext -StorageAccountName $storageAccountName
 
-# Säkerställ
+# Confirm
 $container = Get-AzStorageContainer -Name $containerName -Context $context
 if ($null -eq $container) {
     Write-Host "Container '$containerName' does not exist in storage account '$storageAccountName'."
@@ -211,13 +212,13 @@ if ($null -eq $container) {
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 "<---------------------------------------------------------------------------------------------------------------------------------------------->"
 
-# Skapa SAS 
+# Create SAS-token
 $sasToken = New-AzStorageContainerSASToken -Name $containerName -Context $context -ExpiryTime $expiryTime -Permission rwdl
 
-# Bygg ihop URL
+# Build URL
 $storageAccountUrl = "https://$storageAccountName.blob.core.windows.net/CONTAINERNAME?$sasToken"
 
-# Ladda upp
+# Upload
 azcopy.exe sync "Ninja\Ninja-installers" "$storageAccountUrl" --recursive=true
 
 Stop-Transcript
