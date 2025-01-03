@@ -1,4 +1,4 @@
-Write-Host "Hämtar TOKEN och triggar skript"
+Write-Host "Fetching TOKEN and triggering script"
 # Hämta TOKEN
 $urlToken = "YOUR OATH TOKEN"
 $bodyToken = @{
@@ -8,10 +8,9 @@ $bodyToken = @{
     scope         = "monitoring"
 }
 
-# Bygg en HTTP-begäran 
+# Build http-request
 $responseToken = Invoke-RestMethod -Uri $urlToken -Method Post -ContentType "application/x-www-form-urlencoded" -Body $bodyToken
 
-# Spotta till nästa skript för användning
 $accessToken = $responseToken.access_token 
 
 

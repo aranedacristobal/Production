@@ -1,10 +1,10 @@
 "------------------------------------------------------------------------------------------------------------------------------------------------"
 "------------------------------------------------------------------------------------------------------------------------------------------------"
 
-# Variabel
+# Variables
 $url = "YOUR _URL FOR GET ORGANISATIONS" # URL 
 
-# Definiera huvudet
+# Define header
 $headers = @{
     "Accept"        = "application/json"
     "Authorization" = "Bearer $accessToken"
@@ -20,19 +20,18 @@ Start-Sleep -Seconds 2
 
 $response | Export-Csv -Path "Ninja\Ninja-automation\List\Organisations\organisations-temp.csv" -NoTypeInformation
 
-# Importera
+# Import
 $csvPath = "Ninja\Ninja-automation\List\Organisations\organisations-temp.csv"  
 $outputPath = "Ninja\Ninja-automation\List\Organisations\organisations.csv"  
 
-# Läs in
+# Read
 $data = Import-Csv -Path $csvPath
 
 Start-Sleep -Seconds 5
 
-# Tvätta
 $modifiedData = $data | Select-Object name, 
     @{Name='id'; Expression={""}},  
     @{Name='organizationid'; Expression={$_.id}}  
 
-# Exportera
+# Export
 $modifiedData | Export-Csv -Path $outputPath -NoTypeInformation -Delimiter ','

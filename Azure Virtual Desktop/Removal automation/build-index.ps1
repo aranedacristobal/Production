@@ -120,9 +120,9 @@ foreach ($name in $extractedNames) {
 $foundResources | Format-Table Name, ResourceType, ResourceGroupName
 
 
-#. "C:\Users\CristobalAraneda\Git\Azure DevOps\Azure\Kunder\Brunswick\dev\azure\Removingobjects-dev-pool\Actions\remove-azure-vms.ps1"
-#. "C:\Users\CristobalAraneda\Git\Azure DevOps\Azure\Kunder\Brunswick\dev\azure\Removingobjects-dev-pool\Actions\remove-azure-register.ps1"
-#. "C:\Users\CristobalAraneda\Git\Azure DevOps\Azure\Kunder\Brunswick\dev\azure\Removingobjects-dev-pool\Actions\remove-active-directory-computers.ps1"
-#. "C:\Users\CristobalAraneda\Git\Azure DevOps\Azure\Kunder\Brunswick\dev\azure\Removingobjects-dev-pool\Actions\remove-hostsessions.ps1"
+#. "Azure Virtual Desktop\Removal automation\Actions\remove-active-directory-computers.ps1"
+#. "Azure Virtual Desktop\Removal automation\Actions\remove-azure-register.ps1"
+#. "Azure Virtual Desktop\Removal automation\Actions\remove-active-directory-computers.ps1"
+#. "Azure Virtual Desktop\Removal automation\Actions\remove-hostsessions.ps1"
 
 Stop-Transcript

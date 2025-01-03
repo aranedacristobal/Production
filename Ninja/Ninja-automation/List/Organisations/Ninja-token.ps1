@@ -1,5 +1,5 @@
 Write-Host "Hämtar TOKEN och triggar skript"
-# Hämta TOKEN
+# Fetch TOKEN
 $urlToken = "YOUR OATH TOKEN URL"
 $bodyToken = @{
     grant_type    = "client_credentials"
@@ -8,10 +8,9 @@ $bodyToken = @{
     scope         = "monitoring"
 }
 
-# Bygg en HTTP-begäran 
+# Build the request
 $responseToken = Invoke-RestMethod -Uri $urlToken -Method Post -ContentType "application/x-www-form-urlencoded" -Body $bodyToken
 
-# Spotta till nästa skript för användning
 $accessToken = $responseToken.access_token 
 
 & 'C:\Ninja\Ninja-automation\List\Organisations\Ninja-Get-organisations.ps1'
