@@ -3,8 +3,8 @@ Connect-azaccount
 
 # Define variables
 $subscriptionId = (get-azcontext).Subscription.Id
-$resourceGroup = Read-Host
 $vmName= Read-Host
+$resourceGroup = Get-AzVM -Name $vmName | Select-Object -ExpandProperty ResourceGroupName
 $url = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Compute/virtualMachines/$vmName/providers/Microsoft.Security/pricings/virtualMachines?api-version=2024-01-01"
 
 ## Set access token for the API request
