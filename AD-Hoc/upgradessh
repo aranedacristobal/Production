@@ -1,0 +1,27 @@
+# Define variables
+$downloadUrl = "https://github.com/PowerShell/Win32-OpenSSH/releases/latest/download/OpenSSH-Win64.zip"
+$zipPath = "$env:TEMP\OpenSSH-Win64.zip"
+$installPath = "C:\Tools\OpenSSH"
+
+# Create install directory if it doesn't exist
+if (-Not (Test-Path $installPath)) {
+    New-Item -ItemType Directory -Path $installPath -Force
+}
+
+# Download the latest OpenSSH release
+Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
+
+# Extract the ZIP
+Expand-Archive -Path $zipPath -DestinationPath $installPath -Force
+
+# Add to system PATH if not already present
+$envPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine)
+if ($envPath -notlike "*$installPath*") {
+    [Environment]::SetEnvironmentVariable("Path", "$envPath;$installPath", [EnvironmentVariableTarget]::Machine)
+    Write-Host "✅ Added $installPath to system PATH. You may need to restart your session."
+} else {
+    Write-Host "ℹ️ $installPath is already in the system PATH."
+}
+
+# Verify the new version
+& "$installPath\ssh.exe" -V
