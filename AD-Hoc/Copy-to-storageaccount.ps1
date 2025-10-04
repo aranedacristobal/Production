@@ -52,7 +52,7 @@ $destinationPath = Read-Host -Prompt "Enter the Destination Path"
 
 
 #Bygg ihop kommando
-$command = "$azcopyPath copy `"$sourceUrl`" `"$destinationPath`" --recursive=true"
+$command = "$azcopyPath sync `"$sourceUrl`" `"$destinationPath`" --recursive=true"
 
 #Appenda 
 $command >> "C:\temp\copy.ps1"
